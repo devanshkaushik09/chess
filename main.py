@@ -13,6 +13,12 @@ font_b = pg.font.Font('freesansbold.ttf',20)
 timer = pg.time.Clock()
 fps = 60
 
+#Color Themes
+dark_check = 	[(147,196,125),	(41,134,204),(81,37,243)] 
+light_check =   [(255,255,255)]
+hglt_color =    [(249, 219, 186)]
+
+
 #title and icon
 icon = pg.image.load('./assets/chessicon.png')
 pg.display.set_icon(icon)
@@ -115,11 +121,11 @@ def draw_board():
         if(row%2 == 0):
             pos_x = col*160
             pos_y = row*80
-            pg.draw.rect(screen,(255,255,255),[pos_x,pos_y,sq_size,sq_size])
+            pg.draw.rect(screen,light_check[0],[pos_x,pos_y,sq_size,sq_size])
         else:
             pos_x = col*160 + 80
             pos_y = row*80
-            pg.draw.rect(screen,(255,255,255),[pos_x,pos_y,sq_size,sq_size])
+            pg.draw.rect(screen,light_check[0],[pos_x,pos_y,sq_size,sq_size])
         # horizontal box
         pg.draw.rect(screen,(194,189,132),[0,640,WIDTH,60])
         
@@ -142,7 +148,7 @@ def draw_pieces():
         #first highlightion is drawn
         if(selec_turn < 2): #white turn
             if(selected_square == i):
-                pg.draw.rect(screen,(249, 219, 186),[w_locations[i][0]*80,w_locations[i][1]*80,80,80])
+                pg.draw.rect(screen,hglt_color[0],[w_locations[i][0]*80,w_locations[i][1]*80,80,80])
         #then piece is drawn       
         screen.blit(w_images[index],((w_locations[i][0]) * 80 + offset, (w_locations[i][1]) * 80+offset))
         
@@ -157,12 +163,11 @@ def draw_pieces():
         #then piece is drawn       
         screen.blit(b_images[index],((b_locations[i][0]) * 80 + offset, (b_locations[i][1]) * 80+offset))
         
-
 #Game Loop
 run = True
 while run:
     timer.tick(fps)
-    screen.fill((81,37,243))
+    screen.fill(dark_check[2])
     
     draw_board()
     draw_pieces()
