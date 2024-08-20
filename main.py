@@ -8,6 +8,8 @@ pg.init()
 WIDTH = 900
 HEIGHT = 700
 screen = pg.display.set_mode((WIDTH,HEIGHT))
+font_b = pg.font.Font('freesansbold.ttf',10)
+font_b = pg.font.Font('freesansbold.ttf',20)
 timer = pg.time.Clock()
 fps = 60
 
@@ -35,7 +37,7 @@ w_captured_pieces = []
 b_captured_pieces = []
 
 # sizes for scaling
-norm_size = 60
+norm_size = 70
 s_size = 25
 
 # some more variables that will be needed further
@@ -104,11 +106,6 @@ s_b_images = [b_pawn_s,b_queen_s,b_king_s,b_knight_s,b_rook_s,b_bishop_s]
 index_list = ['pawn','queen','king','knight','rook','bishop']
 
 
-
-
-
-
-
 #drawing the checker board
 def draw_board():
     sq_size = 80
@@ -130,7 +127,36 @@ def draw_board():
         pg.draw.rect(screen,(194,189,132),[640,0,260,HEIGHT])
         pg.draw.rect(screen,(0,0,0),[640,0,260,HEIGHT],3)
         pg.draw.rect(screen,(0,0,0),[0,640,WIDTH,60],3)
-            
+        
+        selec_turn_text = ['White: Select a piece','White: Select the destination'
+                           ,'Black: Select a piece','Black: Select the destination']
+        screen.blit(font_b.render(selec_turn_text[selec_turn],True,'black'),(40,660))
+
+#drawing the peices on the board along with highlightion effect            
+def draw_pieces():
+    
+    offset = 5
+    for i in range(len(w_pieces)):
+        index = index_list.index(w_pieces[i])
+        
+        #first highlightion is drawn
+        if(selec_turn < 2): #white turn
+            if(selected_square == i):
+                pg.draw.rect(screen,(249, 219, 186),[w_locations[i][0]*80,w_locations[i][1]*80,80,80])
+        #then piece is drawn       
+        screen.blit(w_images[index],((w_locations[i][0]) * 80 + offset, (w_locations[i][1]) * 80+offset))
+        
+    for i in range(len(b_pieces)):
+        index = index_list.index(b_pieces[i])
+        
+        #first highlightion is drawn
+        if(selec_turn > 1): #black turn
+            if(selected_square == i):
+                pg.draw.rect(screen,(249, 219, 186),[b_locations[i][0]*80,b_locations[i][1]*80,80,80])
+                
+        #then piece is drawn       
+        screen.blit(b_images[index],((b_locations[i][0]) * 80 + offset, (b_locations[i][1]) * 80+offset))
+        
 
 #Game Loop
 run = True
@@ -139,22 +165,36 @@ while run:
     screen.fill((81,37,243))
     
     draw_board()
+    draw_pieces()
     # handling the events
     for event in pg.event.get():
         if event.type == pg.QUIT:
             run = False
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        if event.type == pg.MOUSEBUTTONDOWN and event.button== 1:
+            pos_x = event.pos[0] // 80
+            pos_y = event.pos[1] // 80 
+
+            click_pos = (pos_x,pos_y)
+            if selec_turn < 2:
+                if click_pos in w_locations:
+                    selected_square = w_locations.index(click_pos)
+                    if selec_turn == 0:
+                        selec_turn = 1
+                if click_pos in valid_moves and selected_square != 100:
+                    w_locations[selected_square] = click_pos
+                    
+                    #if it captures
+                    if click_pos in b_locations:
+                        
+                        index_of_b_piece = b_locations.index(click_pos)
+                        
+                        #addind that captured piece to list
+                        w_captured_pieces.append(b_pieces[index_of_b_piece])
+                        
+                        #removing it from lists
+                        b_locations.pop(index_of_b_piece)
+                        b_pieces.pop(index_of_b_piece)
+
     # updating the display
     # here the diff b/w "flip" and "update" is flip updates complete display but "update" does specific part
     pg.display.flip()
