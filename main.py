@@ -17,6 +17,7 @@ fps = 60
 dark_check = 	[(147,196,125),	(41,134,204),(81,37,243)] 
 light_check =   [(255,255,255)]
 hglt_color =    [(249, 219, 186)]
+color_valid_move = [(108,106,105)]
 
 
 #title and icon
@@ -162,15 +163,130 @@ def draw_pieces():
                 
         #then piece is drawn       
         screen.blit(b_images[index],((b_locations[i][0]) * 80 + offset, (b_locations[i][1]) * 80+offset))
+
+#check valid moves for the selected piece
+def check_valid_moves():
+    if(selec_turn < 2):
+        option_list = w_options
+    else:
+        option_list = b_options
+    
+    valid_options = option_list[selected_square]
+    return valid_options  
+            
+#drawing valid moves on the screen
+def draw_valids(valids):
+    
+    for i in range(len(valids)):
+        pg.draw.circle(screen,color_valid_move[0],(valids[i][0] * 80 + 40,valids[i][1] * 80 + 40),12)
+    
+#Functions to check moves for each individual piece
+#For Pawn
+def check_pawn(position,color):
+    moves_list = []
+    
+    if color is 'white':
+        if (position[0],position[1] + 1) not in w_locations and \
+            (position[0],position[1] + 1) not in b_locations and position[1] < 7:
+            moves_list.append((position[0],position[1] + 1))
+            
+        if (position[0],position[1] + 2) not in w_locations and \
+            (position[0],position[1] + 2) not in b_locations and position[1] == 1:
+            moves_list.append((position[0],position[1] + 2))
         
+        if (position[0] + 1,position[1] + 1) in b_locations:    
+            moves_list.append((position[0] + 1,position[1] + 1))
+            
+        if (position[0] - 1, position[1] + 1) in b_locations:    
+            moves_list.append((position[0] - 1,position[1] + 1))
+    
+    #color is black
+    else:
+        if (position[0],position[1] - 1) not in w_locations and \
+            (position[0],position[1] - 1) not in b_locations and position[1] > 0:
+            moves_list.append((position[0],position[1] - 1))
+            
+        if (position[0],position[1] - 2) not in w_locations and \
+            (position[0],position[1] - 2) not in b_locations and position[1] == 6:
+            moves_list.append((position[0],position[1] - 2))
+        
+        if (position[0] + 1,position[1] - 1) in w_locations:    
+            moves_list.append((position[0] + 1,position[1] - 1))
+            
+        if (position[0] - 1, position[1] - 1) in w_locations:    
+            moves_list.append((position[0] - 1,position[1] - 1))
+           
+    return moves_list    
+
+#For Rook     
+def check_rook(position,color):
+    pass
+
+#For Knight
+def check_knight(position,color):
+    pass
+
+#For Bishop
+def check_bishop(position,color):
+    pass
+
+#For Queen
+def check_queen(position,color):
+    pass
+
+#For King
+def check_king(position,color):
+    pass
+
+#checking all the valid moves for a particular position
+def check_options(pieces,locations,turn):
+    
+    moves_list = []
+    
+    list_of_all_moves = []
+    
+    for i in range(len(pieces)):
+        loc = locations[i]
+        piece = pieces[i]
+        
+        if piece is 'pawn':
+            moves_list = check_pawn(loc,turn) 
+
+        # elif piece is 'knight':
+        #     moves_list = check_knight(loc,turn) 
+            
+        # elif piece is 'knight':
+        #     moves_list = check_bishop(loc,turn) 
+        
+        # elif piece is 'knight':
+        #     moves_list = check_rook(loc,turn) 
+        
+        # elif piece is 'knight':
+        #     moves_list = check_queen(loc,turn) 
+        
+        # else:
+        #     moves_list = check_king(loc,turn) 
+
+        list_of_all_moves.append(moves_list)
+    
+    return list_of_all_moves
+
 #Game Loop
+b_options = check_options(b_pieces,b_locations,'black')
+w_options = check_options(w_pieces,w_locations,'white')
 run = True
 while run:
     timer.tick(fps)
-    screen.fill(dark_check[2])
+    screen.fill(dark_check[1])
     
     draw_board()
     draw_pieces()
+    
+    #drawing valid moves
+    if selected_square != 100:
+        valid_moves = check_valid_moves()
+        draw_valids(valid_moves)
+    
     # handling the events
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -199,6 +315,41 @@ while run:
                         #removing it from lists
                         b_locations.pop(index_of_b_piece)
                         b_pieces.pop(index_of_b_piece)
+                    b_options = check_options(b_pieces,b_locations,'black')
+                    w_options = check_options(w_pieces,w_locations,'white')
+                    
+                    selec_turn = 2
+                    selected_square = 100
+                    valid_moves = []
+            
+            #for black to move
+            if selec_turn > 1:
+                if click_pos in b_locations:
+                    selected_square = b_locations.index(click_pos)
+                    if selec_turn == 2:
+                        selec_turn = 3
+                if click_pos in valid_moves and selected_square != 100:
+                    b_locations[selected_square] = click_pos
+                    
+                    #if it captures
+                    if click_pos in w_locations:
+                        
+                        index_of_w_piece = w_locations.index(click_pos)
+                        
+                        #addind that captured piece to list
+                        b_captured_pieces.append(w_pieces[index_of_w_piece])
+                        
+                        #removing it from lists
+                        w_locations.pop(index_of_w_piece)
+                        w_pieces.pop(index_of_w_piece)
+                        
+                    w_options = check_options(w_pieces,w_locations,'white')
+                    b_options = check_options(b_pieces,b_locations,'black')
+                    
+                    selec_turn = 0
+                    selected_square = 100
+                    valid_moves = []
+
 
     # updating the display
     # here the diff b/w "flip" and "update" is flip updates complete display but "update" does specific part
