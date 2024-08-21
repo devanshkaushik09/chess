@@ -18,6 +18,7 @@ dark_check = 	[(147,196,125),	(41,134,204),(81,37,243)]
 light_check =   [(255,255,255)]
 hglt_color =    [(249, 219, 186)]
 color_valid_move = [(108,106,105)]
+check_color = (205,92,92)
 
 
 #title and icon
@@ -45,7 +46,7 @@ b_captured_pieces = []
 
 # sizes for scaling
 norm_size = 70
-s_size = 25
+s_size = 35
 
 # some more variables that will be needed further
 # 0 - w turn no selec, 1 - w turn selec, 2 - b turn no selec, 3 - b turn selec
@@ -164,6 +165,36 @@ def draw_pieces():
         #then piece is drawn       
         screen.blit(b_images[index],((b_locations[i][0]) * 80 + offset, (b_locations[i][1]) * 80+offset))
 
+#drawing captured pieces on the board
+def draw_captures():
+    for i in range(len(w_captured_pieces)):
+        cap_piece = w_captured_pieces[i]
+        index = index_list.index(cap_piece)
+        screen.blit(s_b_images[index],(700,8+30*i))
+        
+    for i in range(len(b_captured_pieces)):
+        cap_piece = b_captured_pieces[i]
+        index = index_list.index(cap_piece)
+        screen.blit(s_w_images[index],(800,8+30*i))
+
+#drawing the checks (if presents)
+def draw_checks():
+    
+    if selec_turn < 2:
+        if 'king' in w_pieces:
+            index = w_pieces.index('king')
+            loc = w_locations[index]
+            for i in range(len(b_options)):
+                if loc in b_options[i]:
+                    pg.draw.rect(screen,check_color,[loc[0]*80,loc[1]*80,80,80])        
+    else:
+        if 'king' in b_pieces:
+            index = b_pieces.index('king')
+            loc = b_locations[index]
+            for i in range(len(w_options)):
+                if loc in w_options[i]:
+                    pg.draw.rect(screen,check_color,[loc[0]*80,loc[1]*80,80,80])   
+                 
 #check valid moves for the selected piece
 def check_valid_moves():
     if(selec_turn < 2):
@@ -281,15 +312,73 @@ def check_knight(position,color):
 
 #For Bishop
 def check_bishop(position,color):
-    pass
+     
+    moves_list = []
+    if color is 'white':
+        enemy_locs = b_locations
+        own_locs = w_locations
+    else:
+        own_locs = b_locations
+        enemy_locs = w_locations
+    for i in range(4): # for all four directions
+        path = True
+        chain = 1
+        if(i == 0): #down right
+            x = 1 
+            y = 1
+        elif (i == 1): # up right
+            x = 1
+            y = -1   
+        elif (i == 2): #down left
+            x = -1
+            y = 1   
+        else: #up left
+            x = -1
+            y = -1
+        
+        while path:
+            if(position[0] + (chain * x),position[1] + (chain * y)) not in own_locs and \
+                   0 <= position[0] + (chain * x) <= 7 and 0 <= position[1] + (chain * y) <= 7 :
+
+                moves_list.append((position[0] + (chain * x),position[1] + (chain * y)))
+                if(position[0] + (chain * x),position[1] + (chain * y)) in enemy_locs:
+                    path = False
+                chain += 1 
+            else:
+                path = False 
+        
+        
+    return moves_list
 
 #For Queen
 def check_queen(position,color):
-    pass
+    moves_list = check_bishop(position,color)
+    second_list = check_rook(position,color)
+    
+    for i in range(len(second_list)):
+        moves_list.append(second_list[i])
+    return moves_list
 
 #For King
 def check_king(position,color):
-    pass
+    
+    moves_list = []
+    if color is 'white':
+        enemy_locs = b_locations
+        own_locs = w_locations
+    else:
+        own_locs = b_locations
+        enemy_locs = w_locations
+        
+    # 8 squares for king to move
+    targets = [(1,1),(1,0),(1,-1),(0,1),(0,-1),(-1,1),(-1,0),(-1,-1)]
+    
+    for i in range(8):
+        trgt = (position[0] + targets[i][0],position[1] + targets[i][1])
+        if trgt not in own_locs and 0 <= trgt[0] <= 7 and 0 <= trgt[1] <= 7:
+            moves_list.append(trgt)
+    
+    return moves_list
 
 #checking all the valid moves for a particular position
 def check_options(pieces,locations,turn):
@@ -308,17 +397,17 @@ def check_options(pieces,locations,turn):
         elif piece is 'knight':
             moves_list = check_knight(loc,turn) 
             
-        # elif piece is 'bishop':
-        #     moves_list = check_bishop(loc,turn) 
+        elif piece is 'bishop':
+            moves_list = check_bishop(loc,turn) 
         
         elif piece is 'rook':
             moves_list = check_rook(loc,turn) 
         
-        # elif piece is 'queen':
-        #     moves_list = check_queen(loc,turn) 
+        elif piece is 'queen':
+            moves_list = check_queen(loc,turn) 
         
-        # else:
-        #     moves_list = check_king(loc,turn) 
+        else:
+            moves_list = check_king(loc,turn) 
 
         list_of_all_moves.append(moves_list)
     
@@ -333,7 +422,9 @@ while run:
     screen.fill(dark_check[2])
     
     draw_board()
+    draw_checks()
     draw_pieces()
+    draw_captures()
     
     #drawing valid moves
     if selected_square != 100:
