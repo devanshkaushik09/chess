@@ -220,11 +220,64 @@ def check_pawn(position,color):
 
 #For Rook     
 def check_rook(position,color):
-    pass
+    
+    moves_list = []
+    if color is 'white':
+        enemy_locs = b_locations
+        own_locs = w_locations
+    else:
+        own_locs = b_locations
+        enemy_locs = w_locations
+    for i in range(4): # for all four directions
+        path = True
+        chain = 1
+        if(i == 0): #down
+            x = 0 
+            y = 1
+        elif (i == 1): # up
+            x = 0
+            y = -1   
+        elif (i == 2): #right
+            x = 1
+            y = 0   
+        else: #left
+            x = -1
+            y = 0
+        
+        while path:
+            if(position[0] + (chain * x),position[1] + (chain * y)) not in own_locs and \
+                   0 <= position[0] + (chain * x) <= 7 and 0 <= position[1] + (chain * y) <= 7 :
+
+                moves_list.append((position[0] + (chain * x),position[1] + (chain * y)))
+                if(position[0] + (chain * x),position[1] + (chain * y)) in enemy_locs:
+                    path = False
+                chain += 1 
+            else:
+                path = False
+    
+    return moves_list
 
 #For Knight
 def check_knight(position,color):
-    pass
+    moves_list = []
+    if color is 'white':
+        enemy_locs = b_locations
+        own_locs = w_locations
+    else:
+        own_locs = b_locations
+        enemy_locs = w_locations
+        
+        
+    # 8 squares for knight to move
+    targets = [(1,2),(1,-2),(2,-1),(2,1),(-1,2),(-1,-2),(-2,1),(-2,-1)]
+    
+    for i in range(8):
+        trgt = (position[0] + targets[i][0],position[1] + targets[i][1])
+        if trgt not in own_locs and 0 <= trgt[0] <= 7 and 0 <= trgt[1] <= 7:
+            moves_list.append(trgt)
+            
+            
+    return moves_list
 
 #For Bishop
 def check_bishop(position,color):
@@ -252,16 +305,16 @@ def check_options(pieces,locations,turn):
         if piece is 'pawn':
             moves_list = check_pawn(loc,turn) 
 
-        # elif piece is 'knight':
-        #     moves_list = check_knight(loc,turn) 
+        elif piece is 'knight':
+            moves_list = check_knight(loc,turn) 
             
-        # elif piece is 'knight':
+        # elif piece is 'bishop':
         #     moves_list = check_bishop(loc,turn) 
         
-        # elif piece is 'knight':
-        #     moves_list = check_rook(loc,turn) 
+        elif piece is 'rook':
+            moves_list = check_rook(loc,turn) 
         
-        # elif piece is 'knight':
+        # elif piece is 'queen':
         #     moves_list = check_queen(loc,turn) 
         
         # else:
@@ -277,7 +330,7 @@ w_options = check_options(w_pieces,w_locations,'white')
 run = True
 while run:
     timer.tick(fps)
-    screen.fill(dark_check[1])
+    screen.fill(dark_check[2])
     
     draw_board()
     draw_pieces()
