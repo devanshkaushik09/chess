@@ -8,7 +8,7 @@ pg.init()
 WIDTH = 900
 HEIGHT = 700
 screen = pg.display.set_mode((WIDTH,HEIGHT))
-font_b = pg.font.Font('freesansbold.ttf',10)
+font_big = pg.font.Font('freesansbold.ttf',40)
 font_b = pg.font.Font('freesansbold.ttf',20)
 timer = pg.time.Clock()
 fps = 60
@@ -412,14 +412,14 @@ def check_options(pieces,locations,turn):
         list_of_all_moves.append(moves_list)
     
     return list_of_all_moves
-
+winner = ''
 #Game Loop
 b_options = check_options(b_pieces,b_locations,'black')
 w_options = check_options(w_pieces,w_locations,'white')
 run = True
 while run:
     timer.tick(fps)
-    screen.fill(dark_check[2])
+    screen.fill(dark_check[1])
     
     draw_board()
     draw_checks()
@@ -439,62 +439,77 @@ while run:
             pos_x = event.pos[0] // 80
             pos_y = event.pos[1] // 80 
 
-            click_pos = (pos_x,pos_y)
-            if selec_turn < 2:
-                if click_pos in w_locations:
-                    selected_square = w_locations.index(click_pos)
-                    if selec_turn == 0:
-                        selec_turn = 1
-                if click_pos in valid_moves and selected_square != 100:
-                    w_locations[selected_square] = click_pos
-                    
-                    #if it captures
-                    if click_pos in b_locations:
-                        
-                        index_of_b_piece = b_locations.index(click_pos)
-                        
-                        #addind that captured piece to list
-                        w_captured_pieces.append(b_pieces[index_of_b_piece])
-                        
-                        #removing it from lists
-                        b_locations.pop(index_of_b_piece)
-                        b_pieces.pop(index_of_b_piece)
-                    b_options = check_options(b_pieces,b_locations,'black')
-                    w_options = check_options(w_pieces,w_locations,'white')
-                    
-                    selec_turn = 2
-                    selected_square = 100
-                    valid_moves = []
-            
-            #for black to move
-            if selec_turn > 1:
-                if click_pos in b_locations:
-                    selected_square = b_locations.index(click_pos)
-                    if selec_turn == 2:
-                        selec_turn = 3
-                if click_pos in valid_moves and selected_square != 100:
-                    b_locations[selected_square] = click_pos
-                    
-                    #if it captures
+            if winner is '':
+                click_pos = (pos_x,pos_y)
+                if selec_turn < 2:
                     if click_pos in w_locations:
-                        
-                        index_of_w_piece = w_locations.index(click_pos)
-                        
-                        #addind that captured piece to list
-                        b_captured_pieces.append(w_pieces[index_of_w_piece])
-                        
-                        #removing it from lists
-                        w_locations.pop(index_of_w_piece)
-                        w_pieces.pop(index_of_w_piece)
-                        
-                    w_options = check_options(w_pieces,w_locations,'white')
-                    b_options = check_options(b_pieces,b_locations,'black')
-                    
-                    selec_turn = 0
-                    selected_square = 100
-                    valid_moves = []
+                        selected_square = w_locations.index(click_pos)
+                        if selec_turn == 0:
+                            selec_turn = 1
+                    if click_pos in valid_moves and selected_square != 100:
+                        w_locations[selected_square] = click_pos
 
+                        #if it captures
+                        if click_pos in b_locations:
 
+                            index_of_b_piece = b_locations.index(click_pos)
+
+                            #addind that captured piece to list
+                            w_captured_pieces.append(b_pieces[index_of_b_piece])
+
+                            #removing it from lists
+                            b_locations.pop(index_of_b_piece)
+                            b_pieces.pop(index_of_b_piece)
+                        b_options = check_options(b_pieces,b_locations,'black')
+                        w_options = check_options(w_pieces,w_locations,'white')
+
+                        selec_turn = 2
+                        selected_square = 100
+                        valid_moves = []
+
+                        #checkinng winner
+                        if 'king' in w_captured_pieces:
+                            winner = 'white'
+                            
+                #for black to move
+                if selec_turn > 1:
+                    if click_pos in b_locations:
+                        selected_square = b_locations.index(click_pos)
+                        if selec_turn == 2:
+                            selec_turn = 3
+                    if click_pos in valid_moves and selected_square != 100:
+                        b_locations[selected_square] = click_pos
+
+                        #if it captures
+                        if click_pos in w_locations:
+
+                            index_of_w_piece = w_locations.index(click_pos)
+
+                            #addind that captured piece to list
+                            b_captured_pieces.append(w_pieces[index_of_w_piece])
+
+                            #removing it from lists
+                            w_locations.pop(index_of_w_piece)
+                            w_pieces.pop(index_of_w_piece)
+
+                        w_options = check_options(w_pieces,w_locations,'white')
+                        b_options = check_options(b_pieces,b_locations,'black')
+
+                        selec_turn = 0
+                        selected_square = 100
+                        valid_moves = []
+
+                        if 'king' in b_captured_pieces:
+                            winner = 'black'
+    if winner != '':                
+        pg.draw.rect(screen,(dark_check[0]),[220,220,200,200])
+        won_text = ['WHITE','WON']
+        if winner is 'white':
+            screen.blit(font_big.render(won_text[0],True,'white'),(255,260))
+            screen.blit(font_big.render(won_text[1],True,'white'),(275,320))
+        if winner is 'black':
+            screen.blit(font_big.render("Black",True,'white'),(255,260))
+            screen.blit(font_big.render(won_text[1],True,'white'),(275,320))
     # updating the display
     # here the diff b/w "flip" and "update" is flip updates complete display but "update" does specific part
     pg.display.flip()
