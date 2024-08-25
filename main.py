@@ -14,12 +14,12 @@ timer = pg.time.Clock()
 fps = 60
 
 #Color Themes
-dark_check = 	[(147,196,125),	(41,134,204),(81,37,243)] 
-light_check =   [(255,255,255)]
+dark_check = 	[(114,149,81),(209,136,20),(41,134,204),(188,88,70),(184,135,98),(133,119,186)] 
+light_check =   [(234,236,208)]
 hglt_color =    [(249, 219, 186)]
 color_valid_move = [(108,106,105)]
 check_color = (205,92,92)
-theme = 1
+theme = 0
 
 #title and icon
 icon = pg.image.load('./assets/chessicon.png')
@@ -520,7 +520,7 @@ while run:
                     selected_square = 100
                     valid_moves = []
                 if( 650<= x_point <= 830 and 320 <= y_point <= 360):
-                    theme = (theme+1)%3
+                    theme = (theme+1)%6
     if winner != '':                
         pg.draw.rect(screen,(dark_check[0]),[220,220,200,200])
         #play again
