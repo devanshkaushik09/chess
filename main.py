@@ -19,7 +19,7 @@ light_check =   [(255,255,255)]
 hglt_color =    [(249, 219, 186)]
 color_valid_move = [(108,106,105)]
 check_color = (205,92,92)
-
+theme = 1
 
 #title and icon
 icon = pg.image.load('./assets/chessicon.png')
@@ -27,14 +27,14 @@ pg.display.set_icon(icon)
 pg.display.set_caption('Chess Game')
 
 # lists for pieces and their locations
-w_pieces = ['rook','knight','bishop','queen','king','bishop','knight','rook'
+w_pieces = ['rook','knight','bishop','king','queen','bishop','knight','rook'
             ,'pawn','pawn','pawn','pawn','pawn','pawn','pawn','pawn']
 
 w_locations = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0)
                ,(0,1),(1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
 
 
-b_pieces = ['rook','knight','bishop','queen','king','bishop','knight','rook'
+b_pieces = ['rook','knight','bishop','king','queen','bishop','knight','rook'
             ,'pawn','pawn','pawn','pawn','pawn','pawn','pawn','pawn']
 
 b_locations = [(0,7),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7)
@@ -419,7 +419,7 @@ w_options = check_options(w_pieces,w_locations,'white')
 run = True
 while run:
     timer.tick(fps)
-    screen.fill(dark_check[1])
+    screen.fill(dark_check[theme])
     
     draw_board()
     draw_checks()
@@ -436,8 +436,10 @@ while run:
         if event.type == pg.QUIT:
             run = False
         if event.type == pg.MOUSEBUTTONDOWN and event.button== 1:
-            pos_x = event.pos[0] // 80
-            pos_y = event.pos[1] // 80 
+            x_point = event.pos[0]
+            y_point = event.pos[1]
+            pos_x = x_point // 80
+            pos_y = y_point // 80 
 
             if winner is '':
                 click_pos = (pos_x,pos_y)
@@ -501,15 +503,39 @@ while run:
 
                         if 'king' in b_captured_pieces:
                             winner = 'black'
+            else:
+                if( 650<= x_point <= 760 and 270 <= y_point <= 310):
+                    winner = ''
+                    w_pieces = ['rook','knight','bishop','king','queen','bishop','knight','rook'\
+                                ,'pawn','pawn','pawn','pawn','pawn','pawn','pawn','pawn']
+                    w_locations = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0)\
+                                   ,(0,1),(1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
+                    b_pieces = ['rook','knight','bishop','king','queen','bishop','knight','rook'\
+                                ,'pawn','pawn','pawn','pawn','pawn','pawn','pawn','pawn']
+                    b_locations = [(0,7),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7)\
+                                   ,(0,6),(1,6),(2,6),(3,6),(4,6),(5,6),(6,6),(7,6)]
+                    w_captured_pieces = []
+                    b_captured_pieces = []
+                    selec_turn  = 0
+                    selected_square = 100
+                    valid_moves = []
+                if( 650<= x_point <= 830 and 320 <= y_point <= 360):
+                    theme = (theme+1)%3
     if winner != '':                
         pg.draw.rect(screen,(dark_check[0]),[220,220,200,200])
+        #play again
+        pg.draw.rect(screen,(dark_check[1]),[650,270,110,40])
+        screen.blit(font_b.render("Play Again",True,'white'),(655,280))
+        #change theme
+        pg.draw.rect(screen,(dark_check[1]),[650,320,180,40])
+        screen.blit(font_b.render("Change Theme",True,'white'),(655,330))
         won_text = ['WHITE','WON']
         if winner is 'white':
-            screen.blit(font_big.render(won_text[0],True,'white'),(255,260))
-            screen.blit(font_big.render(won_text[1],True,'white'),(275,320))
+            screen.blit(font_big.render(won_text[0],True,'white'),(255,270))
+            screen.blit(font_big.render(won_text[1],True,'white'),(275,330))
         if winner is 'black':
-            screen.blit(font_big.render("Black",True,'white'),(255,260))
-            screen.blit(font_big.render(won_text[1],True,'white'),(275,320))
+            screen.blit(font_big.render("BLACK",True,'white'),(255,270))
+            screen.blit(font_big.render(won_text[1],True,'white'),(275,330))
     # updating the display
     # here the diff b/w "flip" and "update" is flip updates complete display but "update" does specific part
     pg.display.flip()
