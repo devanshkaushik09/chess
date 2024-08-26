@@ -216,7 +216,7 @@ def draw_valids(valids):
 def check_pawn(position,color):
     moves_list = []
     
-    if color is 'white':
+    if color == 'white':
         if (position[0],position[1] + 1) not in w_locations and \
             (position[0],position[1] + 1) not in b_locations and position[1] < 7:
             moves_list.append((position[0],position[1] + 1))
@@ -231,7 +231,7 @@ def check_pawn(position,color):
         if (position[0] - 1, position[1] + 1) in b_locations:    
             moves_list.append((position[0] - 1,position[1] + 1))
     
-    #color is black
+    #color == black
     else:
         if (position[0],position[1] - 1) not in w_locations and \
             (position[0],position[1] - 1) not in b_locations and position[1] > 0:
@@ -253,7 +253,7 @@ def check_pawn(position,color):
 def check_rook(position,color):
     
     moves_list = []
-    if color is 'white':
+    if color == 'white':
         enemy_locs = b_locations
         own_locs = w_locations
     else:
@@ -291,7 +291,7 @@ def check_rook(position,color):
 #For Knight
 def check_knight(position,color):
     moves_list = []
-    if color is 'white':
+    if color == 'white':
         enemy_locs = b_locations
         own_locs = w_locations
     else:
@@ -314,7 +314,7 @@ def check_knight(position,color):
 def check_bishop(position,color):
      
     moves_list = []
-    if color is 'white':
+    if color == 'white':
         enemy_locs = b_locations
         own_locs = w_locations
     else:
@@ -363,7 +363,7 @@ def check_queen(position,color):
 def check_king(position,color):
     
     moves_list = []
-    if color is 'white':
+    if color == 'white':
         enemy_locs = b_locations
         own_locs = w_locations
     else:
@@ -391,19 +391,19 @@ def check_options(pieces,locations,turn):
         loc = locations[i]
         piece = pieces[i]
         
-        if piece is 'pawn':
+        if piece == 'pawn':
             moves_list = check_pawn(loc,turn) 
 
-        elif piece is 'knight':
+        elif piece == 'knight':
             moves_list = check_knight(loc,turn) 
             
-        elif piece is 'bishop':
+        elif piece == 'bishop':
             moves_list = check_bishop(loc,turn) 
         
-        elif piece is 'rook':
+        elif piece == 'rook':
             moves_list = check_rook(loc,turn) 
         
-        elif piece is 'queen':
+        elif piece == 'queen':
             moves_list = check_queen(loc,turn) 
         
         else:
@@ -412,6 +412,7 @@ def check_options(pieces,locations,turn):
         list_of_all_moves.append(moves_list)
     
     return list_of_all_moves
+
 winner = ''
 #Game Loop
 b_options = check_options(b_pieces,b_locations,'black')
@@ -441,7 +442,7 @@ while run:
             pos_x = x_point // 80
             pos_y = y_point // 80 
 
-            if winner is '':
+            if winner == '':
                 click_pos = (pos_x,pos_y)
                 if selec_turn < 2:
                     if click_pos in w_locations:
@@ -519,6 +520,8 @@ while run:
                     selec_turn  = 0
                     selected_square = 100
                     valid_moves = []
+                    b_options = check_options(b_pieces,b_locations,'black')
+                    w_options = check_options(w_pieces,w_locations,'white')
                 if( 650<= x_point <= 830 and 320 <= y_point <= 360):
                     theme = (theme+1)%6
     if winner != '':                
@@ -530,10 +533,10 @@ while run:
         pg.draw.rect(screen,(dark_check[1]),[650,320,180,40])
         screen.blit(font_b.render("Change Theme",True,'white'),(655,330))
         won_text = ['WHITE','WON']
-        if winner is 'white':
+        if winner == 'white':
             screen.blit(font_big.render(won_text[0],True,'white'),(255,270))
             screen.blit(font_big.render(won_text[1],True,'white'),(275,330))
-        if winner is 'black':
+        if winner == 'black':
             screen.blit(font_big.render("BLACK",True,'white'),(255,270))
             screen.blit(font_big.render(won_text[1],True,'white'),(275,330))
     # updating the display
