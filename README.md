@@ -20,7 +20,7 @@ This chess game will feature:
 <br>
 -->Legal Move Validation: Ensures all moves are valid based on chess rules.
 <br>
--->Check and Checkmate Detection: Automatically checks for checks and checkmates.
+-->Checks Detection: Automatically checks for checks.
 <br>
 -->Customizable Features: Future additions may include multiplayer mode, AI opponents, and enhanced visuals.
 <br>
@@ -38,7 +38,7 @@ Roadmap
 <br>
  -->Initial setup and basic piece movements
 <br>
- -->Implement check and checkmate logic
+ -->Implement check logic
 <br>
  -->Add support for castling and en passant
 <br>
